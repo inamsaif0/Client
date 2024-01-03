@@ -6,10 +6,12 @@ import { Slider } from '@miblanchard/react-native-slider';
 import { AntDesign } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons'; // Import FontAwesome
+import { useNavigation } from '@react-navigation/native';
 
 
-const AudioPlayer = ({ audioFile, title, getActive, index, user,active , onDelete}) => {
+const AudioPlayer = ({ audioFile, title, getActive, index, user,active , onDelete ,pause}) => {
 
+  const navigation = useNavigation()
   const sliderAnimation = useState(new Animated.Value(0))[0];
 
   const animateSlider = (value) => {
@@ -65,11 +67,18 @@ const AudioPlayer = ({ audioFile, title, getActive, index, user,active , onDelet
 
   useEffect(() => {
 
+    if(pause){
+      console.log(pause, 'hahaahahahhha')
+      stopPlayback()
+    }
         loadAudio();
     return () => {
       unloadAudio();
+      if(pause){
+        stopPlayback()
+      }
     };
-  }, []);
+  }, [pause]);
 
   useEffect(() => {
     // Update the playback position as audio plays
@@ -127,6 +136,7 @@ const AudioPlayer = ({ audioFile, title, getActive, index, user,active , onDelet
     
 
       if (sound) {
+        console.log(sound, )
         if (isPlaying) {
           await sound.pauseAsync();
         } else {
@@ -154,11 +164,64 @@ const AudioPlayer = ({ audioFile, title, getActive, index, user,active , onDelet
 
         // Toggle the isPlaying state
         setIsPlaying(!isPlaying);
+  
+
       }
     
   };
 
 
+  
+  const stopPlayback = async () => {
+    
+    // console.log()
+    if (sound) {
+      console.log("rrrrrrrrrrrrrrrrrr" )
+    
+        await sound.pauseAsync();
+      
+
+      // Toggle the isPlaying state
+      setIsPlaying(false);
+
+
+    }
+  
+};
+
+  useEffect(async () => {
+    setIsPlaying(false)
+    await stopPlayback()
+
+    // const unsubscribeFocus = navigation.addListener('focus', async () => {
+    //     // Logic to execute when the component gains focus (e.g., resume recording)
+    //     await togglePlayback();
+    //     console.log('Component focused');
+    //     // Pause recording when the component loses focus
+
+    // });
+
+    // const unsubscribeBlur = navigation.addListener('blur', async () => {
+    //     // Logic to execute when the component loses focus (e.g., pause recording)
+    //     await togglePlayback();
+    //     console.log('Component blurred');
+    //      // Pause recording when the component loses focus
+    // });
+    // setIsPlaying(false)
+
+    // Cleanup subscriptions when the component unmounts
+    return  async()  => {
+      console.log(sound ,'Compodasdas asd d asd asd das asnent focused');
+
+
+
+
+              setIsPlaying(!isPlaying);
+
+        // unsubscribeFocus();
+        // unsubscribeBlur();
+    };
+}, [navigation]);
 
   const formatTime = (milliseconds) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
@@ -254,6 +317,7 @@ const AudioPlayer = ({ audioFile, title, getActive, index, user,active , onDelet
       )}
       <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: "center" }}>
         <Pressable onPress={() => back()}>
+      
           <MaterialIcons name="replay-5" size={24} color="black" />
 
         </Pressable>

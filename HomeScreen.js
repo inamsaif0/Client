@@ -360,7 +360,7 @@ export default function App({ navigation }) {
                   <Text style={{ fontSize: 20, color: '#5c0931', marginTop: 10 }}>Recordings</Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleClick(2)} disabled>
+              {/* <TouchableOpacity onPress={() => handleClick(2)} disabled>
               <View style={{
                   width: '100%',
                   height: 210,
@@ -383,7 +383,7 @@ export default function App({ navigation }) {
                 ><Image source={quiz} style={{ width: '30%', height: '50%', }}></Image>
                   <Text style={{ fontSize: 20, color: '#5c0931', marginTop: 10 }}>Quiz</Text>
                 </View>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
               <View style={{height:130}}></View>
           
             </ScrollView>}
@@ -410,6 +410,8 @@ const styles = StyleSheet.create({
     height:"100%"
   },
   box: {
-    display: 'flex'
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent:'center'
   }
 });

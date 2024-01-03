@@ -26,7 +26,7 @@ export default function App() {
         <Stack.Screen name="Home" component={HomeScreen} ></Stack.Screen>
         <Stack.Screen name="Example" component={Example} ></Stack.Screen>
         <Stack.Screen name="MusicData" component={Music} ></Stack.Screen>
-        <Stack.Screen name="recordings" component={Record} options={{headerShown: true,headerTitle:""}}></Stack.Screen>
+        <Stack.Screen name="recordings" component={Record}  options={{headerShown: true,headerTitle:""}}></Stack.Screen>
         <Stack.Screen name="listRecordings" component={ListRecordings} ></Stack.Screen>
         {/* <Stack.Screen name="Recordings" component={Recordings}></Stack.Screen> */}
 

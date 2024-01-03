@@ -17,6 +17,8 @@ import AudioPlayer from '../Components/Audioplayer';
 import Autocomplete from 'react-native-autocomplete-input';
 import { useEffect } from 'react';
 import SelectDropdown from 'react-native-select-dropdown'
+import { useFocusEffect } from '@react-navigation/native';
+
 
 
 
@@ -53,9 +55,13 @@ export default function Record() {
 
     const navigation = useNavigation()
 
+    const [dataPause, setDataPause] = useState(false);
+
     const [recording, setRecording] = useState();
     const [fileName, setFileName] = useState('');
     const [pause, setPause] = useState();
+    const [isPageRender, setIsPageRender] = useState(false);
+
     const [location, setLocation] = useState("");
     const [currentDateTime, setCurrentDateTime] = useState(new Date());
     const [clear, setClear] = useState(false)
@@ -64,6 +70,8 @@ export default function Record() {
     const [teachers, setTeachers] = useState([]);
     const [teachersName, setTeacherName] = useState('');
     const [showSelectTeacherMessage, setShowSelectTeacherMessage] = useState(false);
+
+    
     // const [selectedTeacher, setSelectedTeacher] = useState('');
 
 
@@ -80,6 +88,7 @@ export default function Record() {
             .catch(error => console.error('Error fetching data:', error));
     }, []);
     const dropdownData = teachers.map(teacher => teacher.teacherName);
+
 
 
     // const findTeachers = (query) => {
@@ -117,6 +126,70 @@ export default function Record() {
         }
     }, [showNotification]);
 
+    useEffect(() => {
+        // Component mount logic
+
+        return () => {
+            // Component unmount logic
+            if (recording) {
+                stopRecording();
+            }
+        };
+    }, [recording]);
+    // useEffect(() => {
+    //     // Component mount logic
+    //     if(dataPause){
+    //         setDataPause(false)
+    //     }
+    //     else{
+    //         setDataPause(true)
+    //     }
+        
+    // }, []);
+    useEffect(async () => {
+
+    
+        const unsubscribeFocus = navigation.addListener('focus', async () => {
+            // Logic to execute when the component gains focus (e.g., resume recording)
+            if(dataPause){
+                setDataPause(false)
+            }
+            else{
+                setDataPause(true)
+            }
+            console.log('Component focused');
+            // Pause recording when the component loses focus
+    
+        });
+    
+        const unsubscribeBlur = navigation.addListener('blur', async () => {
+            // Logic to execute when the component loses focus (e.g., pause recording)
+            if(dataPause){
+                setDataPause(false)
+            }
+            else{
+                setDataPause(true)
+            }
+            console.log('Component blurred');
+             // Pause recording when the component loses focus
+        });
+        // setIsPlaying(false)
+    
+        // Cleanup subscriptions when the component unmounts
+        return  async()  => {
+          console.log(sound ,'Compodasdas asd d asd asd das asnent focused');
+    
+    
+    
+    
+    
+            unsubscribeFocus();
+            unsubscribeBlur();
+        };
+    }, [navigation]);
+    // const navigation = useNavigation();
+
+
     const cancelRecording = async () => {
 
         if (recording) {
@@ -134,27 +207,70 @@ export default function Record() {
     };
 
 
-
-
     async function startRecording() {
         try {
-            scaleAnimation.start()
             console.log('Requesting permissions..');
             await Audio.requestPermissionsAsync();
             await Audio.setAudioModeAsync({
                 allowsRecordingIOS: true,
                 playsInSilentModeIOS: true,
             });
-
+    
             console.log('Starting recording..');
-            const { recording } = await Audio.Recording.createAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY
-            );
+    
+            const recordingOptions = {
+                android: {
+                    extension: '.wav', // You can adjust the extension based on your preference
+                    sampleRate: 44100,
+                    numberOfChannels: 2,
+                    bitRate: 128000,
+                    audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
+                    // You may need to experiment with these options to find the best quality for your use case
+                },
+                ios: {
+                    extension: '.wav', // You can adjust the extension based on your preference
+                    sampleRate: 44100,
+                    numberOfChannels: 2,
+                    bitRate: 128000,
+                    audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX,
+                    // You may need to experiment with these options to find the best quality for your use case
+                },
+            };
+    
+            const { recording } = await Audio.Recording.createAsync(recordingOptions);
+    
             setRecording(recording);
             console.log('Recording started');
+    
+            // Assuming you want to stop the recording after 2 minutes (120,000 milliseconds)
+            // setTimeout(() => {
+            //     stopRecording();
+            // }, 120000); // Adjust the duration as needed
+    
         } catch (err) {
             console.error('Failed to start recording', err);
         }
     }
+
+    // async function startRecording() {
+    //     try {
+    //         scaleAnimation.start()
+    //         console.log('Requesting permissions..');
+    //         await Audio.requestPermissionsAsync();
+    //         await Audio.setAudioModeAsync({
+    //             allowsRecordingIOS: true,
+    //             playsInSilentModeIOS: true,
+    //         });
+
+    //         console.log('Starting recording..');
+    //         const { recording } = await Audio.Recording.createAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY
+    //         );
+    //         setRecording(recording);
+    //         console.log('Recording started');
+    //     } catch (err) {
+    //         console.error('Failed to start recording', err);
+    //     }
+    // }
 
     async function stopRecording() {
         try {
@@ -228,6 +344,20 @@ export default function Record() {
         }
     };
 
+    async function goBack() {
+        await stopRecording();
+        // await pauseRecording()
+        
+        navigation.goBack()
+    }
+    function stateChange() {
+        if(dataPause){
+            setDataPause(false)
+        }
+        else{
+            setDataPause(true)
+        }
+    }
     async function handleUpload() {
         
         try {
@@ -308,7 +438,7 @@ export default function Record() {
                 {
 
 
-                    location && <AudioPlayer audioFile={location} />
+                    location && <AudioPlayer audioFile={location} pause={dataPause}  />
                 }
             </View>
 
@@ -379,8 +509,9 @@ export default function Record() {
 
                         }
                     </Pressable>
+                                        
 
-                    <Pressable onPress={() => navigation.goBack()}>
+                    <Pressable onPress={goBack}>
                         <Entypo name="list" size={40} color="black" style={{}} />
                     </Pressable>
 
@@ -389,9 +520,9 @@ export default function Record() {
                     </Pressable>
                 </View>
                 {/* <Button
-        title={recording ? 'Stop Recording' : 'Start Recording'}
-        onPress={recording ? stopRecording : startRecording}
-    /> */}
+                title={recording ? 'Stop Recording' : 'Start Recording'}
+                onPress={recording ? stopRecording : startRecording}
+                /> */}
             </View>
             {showNotification && (
                 <Animated.View

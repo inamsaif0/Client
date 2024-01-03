@@ -55,7 +55,7 @@ const Stopwatch = ({ start, pause,clear }) => {
 
     return `${minutes.toString().padStart(2, '0')}:${seconds
       .toString()
-      .padStart(2, '0')}.${millisecondsFormatted}`;
+      .padStart(2, '0')}:${millisecondsFormatted}`;
   };
 
   return (
