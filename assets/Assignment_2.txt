@@ -1,0 +1,20 @@
+Due Date: 2nd June 2023
+
+1. Create Dockerfile
+
+FROM busybox
+RUN mkdir Test
+WORKDIR Test
+RUN touch Test.txt
+
+
+2. Create Docker Image
+
+myimage
+
+
+3. Create Docker Container
+
+mycontainer
+
+4. Enter Docker Container to verify Test.txt exists in Test folder

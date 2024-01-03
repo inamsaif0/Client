@@ -1,0 +1,71 @@
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you upload profile pic."
+        }
+      ]
+    ],
+    "name": "OTP-ENG",
+    "slug": "awesomeproject",
+    "version": "2.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/adaptive-icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/adaptive-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff",
+      "extra": {
+        "eas": {
+          "projectId": "0b61f7b7-17b9-4e70-8dfc-db4eabe38bf4"
+        }
+      },
+      "assetBundlePatterns": [
+        "**/*"
+      ],
+      "ios": {
+        "supportsTablet": true,
+        "bundleIdentifier": "com.maazasim.AwesomeProject",
+        "appleId": "otpenglish1@gmail.com",
+        "ascAppId": "6450459320",
+        "appleTeamId": "FQRK9L7WR2",
+        "buildNumber":"2"
+
+      },
+      "android": {
+        "adaptiveIcon": {
+          "foregroundImage": "./assets/adaptive-icon.png",
+          "backgroundColor": "#ffffff",
+          "minSdkVersion": 21,
+          "maxSdkVersion": 33
+        },
+        "web": {
+          "favicon": "./assets/favicon.png"
+        },
+        "package": "com.maazasim.AwesomeProject"
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0b61f7b7-17b9-4e70-8dfc-db4eabe38bf4"
+      }
+    },
+    "android": {
+      "package": "com.maazasim.AwesomeProject",
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.maazasim.AwesomeProject"
+    },
+    "owner": "inamsaif"
+  },
+  "android": {
+    "package": "com.maazasim.AwesomeProject"
+  }
+}
