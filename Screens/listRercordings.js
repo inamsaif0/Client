@@ -5,19 +5,27 @@ import { Audio } from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlatList } from 'react-native-gesture-handler';
 import AudioPlayer from '../Components/Audioplayer';
+import AudioplayerCustom from '../Components/AudioplayerCustom';
+
 import { EmailContext } from '../Login';
 import { UserContext } from '../App';
 import { AntDesign } from '@expo/vector-icons';
-import { useNavigation,useIsFocused } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
 
 
 
 
-export default function ListRecordings() {
+export default function ListRecordings({ tabId }) {
+
+
+
     const email = React.useContext(UserContext);
     const navigation = useNavigation();
-    const isFocused=useIsFocused();
+    const isFocused = useIsFocused();
+
+
+    const [tabChange, setTabChange] = React.useState(false);
 
     const [recordings, setRecordings] = React.useState([])
     const [active, setActive] = React.useState(false);
@@ -25,6 +33,7 @@ export default function ListRecordings() {
     const [loading, setLoading] = React.useState(true);
     const [user, setUser] = React.useState()
     const [refreshing, setRefreshing] = React.useState(false)
+    const [isPlayAudio, setIsPlayAudio] = React.useState(false)
 
     const onRefresh = React.useCallback(async () => {
         setRefreshing(true);
@@ -74,30 +83,29 @@ export default function ListRecordings() {
     }
     const onDelete = async (filename, email) => {
         try {
-            console.log(filename,email,'ssss')
-          // Make a post request to delete the audio file
-          await axios.post(`http://52.78.100.137:3001/delete-audio`, { filename:filename, email:email  });
-    
-          // Update the state to re-render the FlatList
-          setUrls((prevAudioFiles) =>
-            prevAudioFiles.filter((audioFile) => audioFile.lastSection !== filename)
-          );
+            console.log(filename, email, 'ssss')
+            // Make a post request to delete the audio file
+            await axios.post(`http://52.78.100.137:3001/delete-audio`, { filename: filename, email: email });
+
+            // Update the state to re-render the FlatList
+            setUrls((prevAudioFiles) =>
+                prevAudioFiles.filter((audioFile) => audioFile.lastSection !== filename)
+            );
         } catch (error) {
-          console.error('Error deleting audio:', error);
+            console.error('Error deleting audio:', error);
         }
-      };
+    };
 
 
     React.useEffect(() => {
-        // clearAsyncStorage()
-        //retrieveData()
-
         console.log(email.userEmail)
         getAudio(email.userEmail)
-
-
-
     }, [isFocused])
+
+    React.useEffect(() => {
+        setTabChange(!tabChange);
+        console.log('ssssssssssss')
+    }, [tabId])
 
     if (loading) {
         return (
@@ -139,16 +147,23 @@ export default function ListRecordings() {
                 keyExtractor={(recording, index) => index.toString()}
                 renderItem={({ item, index }) => (
 
-                    <AudioPlayer
-                        user={user}
-                        title={item.lastSection}
-                        audioFile={item.url}
-                        getActive={(isActive) => getActive(index, isActive)}
-                        index={index}
-                        active={active}
-                        onDelete={() => onDelete(item.lastSection, item.secondlastSection)} // Pass the filename to onDelete
+                    <>
+                        <View>
+                            {/* <Text>AudioPlayer</Text> */}
+                            <AudioPlayer
+                                title={item.lastSection}
+                                audioFile={item.url}
+                                index={index}
+                                active={active}
+                                isPlayAudio={isPlayAudio}
+                                onDelete={() => onDelete(item.lastSection, item.secondlastSection)} // Pass the filename to onDelete
+                                getActive={(isActive) => getActive(index, isActive)}
+                            />
 
-                    />
+                        </View>
+
+
+                    </>
 
                 )}
             />

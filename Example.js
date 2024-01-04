@@ -35,7 +35,7 @@ function Example({tabId,handleClick}) {
         </TabScreen>
         <TabScreen onPress={()=>handleClick(1)} label="Recordings" icon="record-rec">
           <View style={{flex:0.9}}>
-          <ListRecordings />
+          <ListRecordings  tabId={tabId}/>
           <View style={{height:50}}></View>
           </View>
         </TabScreen>

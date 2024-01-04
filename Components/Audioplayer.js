@@ -9,7 +9,7 @@ import { FontAwesome } from '@expo/vector-icons'; // Import FontAwesome
 import { useNavigation } from '@react-navigation/native';
 
 
-const AudioPlayer = ({ audioFile, title, getActive, index, user,active , onDelete ,pause}) => {
+const AudioPlayer = ({ audioFile, title, getActive, index,active , onDelete ,isPlayAudio,pause}) => {
 
   const navigation = useNavigation()
   const sliderAnimation = useState(new Animated.Value(0))[0];
@@ -67,18 +67,17 @@ const AudioPlayer = ({ audioFile, title, getActive, index, user,active , onDelet
 
   useEffect(() => {
 
-    if(pause){
-      console.log(pause, 'hahaahahahhha')
+    if(isPlayAudio){
       stopPlayback()
     }
         loadAudio();
     return () => {
       unloadAudio();
-      if(pause){
+      if(isPlayAudio){
         stopPlayback()
       }
     };
-  }, [pause]);
+  }, [isPlayAudio]);
 
   useEffect(() => {
     // Update the playback position as audio plays
@@ -132,11 +131,21 @@ const AudioPlayer = ({ audioFile, title, getActive, index, user,active , onDelet
   },[active])
   
 
+  
+  useEffect(() => {
+    return sound
+      ? () => {
+          sound.unloadAsync(); 
+        }
+      : undefined;
+  }, [sound]);
+
+
   const togglePlayback = async () => {
     
+       
 
       if (sound) {
-        console.log(sound, )
         if (isPlaying) {
           await sound.pauseAsync();
         } else {
@@ -193,23 +202,6 @@ const AudioPlayer = ({ audioFile, title, getActive, index, user,active , onDelet
     setIsPlaying(false)
     await stopPlayback()
 
-    // const unsubscribeFocus = navigation.addListener('focus', async () => {
-    //     // Logic to execute when the component gains focus (e.g., resume recording)
-    //     await togglePlayback();
-    //     console.log('Component focused');
-    //     // Pause recording when the component loses focus
-
-    // });
-
-    // const unsubscribeBlur = navigation.addListener('blur', async () => {
-    //     // Logic to execute when the component loses focus (e.g., pause recording)
-    //     await togglePlayback();
-    //     console.log('Component blurred');
-    //      // Pause recording when the component loses focus
-    // });
-    // setIsPlaying(false)
-
-    // Cleanup subscriptions when the component unmounts
     return  async()  => {
       console.log(sound ,'Compodasdas asd d asd asd das asnent focused');
 
