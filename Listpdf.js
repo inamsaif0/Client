@@ -226,7 +226,7 @@ export default function Listpdf() {
         visible={modalVisible}
         onRequestClose={() => closeModal()}
       >
-        <Pressable style={{ padding: 20, marginTop: 20, zIndex: 2, alignItems: "flex-end" }} onPress={() => closeModal()}>
+        <Pressable style={{ padding: 20, marginTop: 40, zIndex: 2, alignItems: "flex-end" }} onPress={() => closeModal()}>
           <AntDesign name="closecircle" size={24} color="black" />
         </Pressable>
         {modalVisible && (
@@ -234,6 +234,7 @@ export default function Listpdf() {
             javaScriptEnabled={true}
             source={{ uri: selectedItemUrl }}
             style={{ flex: 1 }}
+            startInLoadingState={true} // Add this prop to enable the loading state
             onError={(error) => console.log(error)}
             renderLoading={() => <ActivityIndicator style={{ flex: 1, zIndex: 3 }} size="large" color="#5c0931" />}
           />

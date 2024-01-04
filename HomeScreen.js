@@ -309,14 +309,16 @@ export default function App({ navigation }) {
           </TouchableOpacity>
 
           {currentTab === "Home" &&
-            <ScrollView style={styles.box} showsVerticalScrollIndicator={false}>
+            <View style={styles.box} showsVerticalScrollIndicator={false}>
 
               <TouchableOpacity onPress={() => handleClick(0)}>
                 <View style={{
-                  width: '100%',
+                  width: '60%',
                   height: 210,
                   borderRadius: 15,
                   marginTop: 25,
+                  marginLeft:70,
+
                   alignItems: 'center',
                   justifyContent: 'center',
                   backgroundColor: '#F4F4F4',
@@ -338,10 +340,11 @@ export default function App({ navigation }) {
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleClick(1)} >
                 <View style={{
-                  width: '100%',
+                  width: '60%',
                   height: 210,
                   borderRadius: 15,
                   marginTop: 25,
+                  marginLeft:70,
                   alignItems: 'center',
                   justifyContent: 'center',
                   backgroundColor: '#F4F4F4',
@@ -355,7 +358,7 @@ export default function App({ navigation }) {
 
                   elevation: 5,
 
-                }} imageStyle={{ borderRadius: 15 }}
+                }} imageStyle={{ borderRadius: 15}}
                 ><Image source={music} style={{ width: '30%', height: '50%', }}></Image>
                   <Text style={{ fontSize: 20, color: '#5c0931', marginTop: 10 }}>Recordings</Text>
                 </View>
@@ -384,9 +387,9 @@ export default function App({ navigation }) {
                   <Text style={{ fontSize: 20, color: '#5c0931', marginTop: 10 }}>Quiz</Text>
                 </View>
               </TouchableOpacity> */}
-              <View style={{height:130}}></View>
+              {/* <View style={{height:130}}></View> */}
           
-            </ScrollView>}
+            </View>}
             {currentTab==='Notes'&& <View style={{ height: "100%" }}><Example handleClick={handleClick} tabId={0}/></View>}
             {currentTab==='Recordings'&& <View style={{ height: "100%" }}><Example handleClick={handleClick} tabId={1}/></View>}
             {/* {currentTab==='Quiz'&& <View style={{ height: "100%" }}><Example handleClick={handleClick} tabId={2}/></View>} */}
@@ -403,15 +406,20 @@ export default function App({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
+    
     flex: 1,
     backgroundColor: '#5c0931',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
-    height:"100%"
+    height:"100%",
+    
   },
   box: {
     display: 'flex',
-    alignItems: 'center',
-    justifyContent:'center'
+    marginTop:80
+    // flexDirection: "row",
+      // marginLeft:70
+    // alignItems: 'center',
+    // justifyContent:'center'
   }
 });

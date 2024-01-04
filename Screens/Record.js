@@ -25,19 +25,22 @@ import { useFocusEffect } from '@react-navigation/native';
 const sendAudioToServer = async (location, email, fileName, teacherName) => {
     try {
         // Read the audio file as binary data
+        // console.log('Location',location)
         const audioData = await FileSystem.readAsStringAsync(location, {
             encoding: FileSystem.EncodingType.Base64,
         });
         const time = new Date()
+        // console.log('audio',audioData)
         
         // Send the audio file to the Node.js server
-        const response = await fetch('http://52.78.100.137:3001/audio', {
+        const response = await fetch('http://192.168.100.97:3001/audio', {
             method: 'POST',
             body: JSON.stringify({ audio: audioData, time: time, email: email, name: fileName.replace(/\s/g, '-'), teacherData: teacherName, status: null}),
             headers: {
                 'Content-Type': 'application/json',
             },
         });
+        console.log('response', response)
         return response
 
     } catch (error) {
@@ -125,6 +128,7 @@ export default function Record() {
             setTimeout(fadeOut, 2000); // Fade out after 2 seconds (adjust as needed)
         }
     }, [showNotification]);
+    
 
     useEffect(() => {
         // Component mount logic
@@ -146,47 +150,47 @@ export default function Record() {
     //     }
         
     // }, []);
-    useEffect(async () => {
+    // useEffect(async () => {
 
     
-        const unsubscribeFocus = navigation.addListener('focus', async () => {
-            // Logic to execute when the component gains focus (e.g., resume recording)
-            if(dataPause){
-                setDataPause(false)
-            }
-            else{
-                setDataPause(true)
-            }
-            console.log('Component focused');
-            // Pause recording when the component loses focus
+    //     const unsubscribeFocus = navigation.addListener('focus', async () => {
+    //         // Logic to execute when the component gains focus (e.g., resume recording)
+    //         if(dataPause){
+    //             setDataPause(false)
+    //         }
+    //         else{
+    //             setDataPause(true)
+    //         }
+    //         console.log('Component focused');
+    //         // Pause recording when the component loses focus
     
-        });
+    //     });
     
-        const unsubscribeBlur = navigation.addListener('blur', async () => {
-            // Logic to execute when the component loses focus (e.g., pause recording)
-            if(dataPause){
-                setDataPause(false)
-            }
-            else{
-                setDataPause(true)
-            }
-            console.log('Component blurred');
-             // Pause recording when the component loses focus
-        });
-        // setIsPlaying(false)
+    //     const unsubscribeBlur = navigation.addListener('blur', async () => {
+    //         // Logic to execute when the component loses focus (e.g., pause recording)
+    //         if(dataPause){
+    //             setDataPause(false)
+    //         }
+    //         else{
+    //             setDataPause(true)
+    //         }
+    //         console.log('Component blurred');
+    //          // Pause recording when the component loses focus
+    //     });
+    //     // setIsPlaying(false)
     
-        // Cleanup subscriptions when the component unmounts
-        return  async()  => {
-          console.log(sound ,'Compodasdas asd d asd asd das asnent focused');
-    
-    
+    //     // Cleanup subscriptions when the component unmounts
+    //     return  async()  => {
+    //       console.log(sound ,'Compodasdas asd d asd asd das asnent focused');
     
     
     
-            unsubscribeFocus();
-            unsubscribeBlur();
-        };
-    }, [navigation]);
+    
+    
+    //         unsubscribeFocus();
+    //         unsubscribeBlur();
+    //     };
+    // }, [navigation]);
     // const navigation = useNavigation();
 
 
@@ -220,25 +224,25 @@ export default function Record() {
     
             const recordingOptions = {
                 android: {
-                    extension: '.wav', // You can adjust the extension based on your preference
+                    extension: '.m4a', // You can adjust the extension based on your preference
                     sampleRate: 44100,
                     numberOfChannels: 2,
-                    bitRate: 128000,
+                    bitRate: 32000, // Adjust the bit rate to further reduce file size
                     audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
                     // You may need to experiment with these options to find the best quality for your use case
                 },
                 ios: {
-                    extension: '.wav', // You can adjust the extension based on your preference
+                    extension: '.m4a', // You can adjust the extension based on your preference
                     sampleRate: 44100,
                     numberOfChannels: 2,
-                    bitRate: 128000,
-                    audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX,
+                    bitRate: 32000, // Adjust the bit rate to further reduce file size
+                audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_LOW,
                     // You may need to experiment with these options to find the best quality for your use case
                 },
             };
     
             const { recording } = await Audio.Recording.createAsync(recordingOptions);
-    
+            console.log(recording, 'sssssss')
             setRecording(recording);
             console.log('Recording started');
     
@@ -272,25 +276,49 @@ export default function Record() {
     //     }
     // }
 
+    // async function stopRecording() {
+    //     try {
+
+    //         scaleAnimation.stop()
+    //         console.log('Stopping recording..');
+    //         setRecording(undefined);
+    //         setPause(false)
+    //         await recording.stopAndUnloadAsync();
+    //         await Audio.setAudioModeAsync({
+    //             allowsRecordingIOS: false,
+    //         });
+    //         const uri = recording.getURI();
+    //         setLocation(uri)
+    //     }
+    //     catch (error) {
+    //         console.error(error)
+    //     }
+    // }
     async function stopRecording() {
         try {
-
-            scaleAnimation.stop()
+            scaleAnimation.stop();
             console.log('Stopping recording..');
+    
+            if (recording) {
+                // Check if the recorder exists before stopping it
+                await recording.stopAndUnloadAsync();
+                const uri = recording.getURI();
+                setLocation(uri);
+            } else {
+                console.warn('Recorder does not exist. Prepare it first using Audio.prepareToRecordAsync.');
+            }
+    
             setRecording(undefined);
-            setPause(false)
-            await recording.stopAndUnloadAsync();
+            setPause(false);
+    
             await Audio.setAudioModeAsync({
                 allowsRecordingIOS: false,
             });
-            const uri = recording.getURI();
-            setLocation(uri)
-        }
-        catch (error) {
-            console.error(error)
+        } catch (error) {
+            console.error(error);
         }
     }
-
+    
     async function pauseRecording() {
         if (recording) {
             try {
