@@ -33,7 +33,7 @@ const sendAudioToServer = async (location, email, fileName, teacherName) => {
         // console.log('audio',audioData)
         
         // Send the audio file to the Node.js server
-        const response = await fetch('http://192.168.100.97:3001/audio', {
+        const response = await fetch('http://52.78.100.137:3001/audio', {
             method: 'POST',
             body: JSON.stringify({ audio: audioData, time: time, email: email, name: fileName.replace(/\s/g, '-'), teacherData: teacherName, status: null}),
             headers: {
