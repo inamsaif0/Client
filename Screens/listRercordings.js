@@ -80,7 +80,7 @@ export default function ListRecordings({ tabId }) {
 
         try {
             setLoading(true);
-            const response = await fetch(`http://192.168.100.97:3001/all-audio`, {
+            const response = await fetch(`http://52.78.100.137:3001/all-audio`, {
                 method: 'POST', // Use POST method to send data in the request body
                 headers: {
                     'Content-Type': 'application/json',
@@ -127,7 +127,7 @@ export default function ListRecordings({ tabId }) {
         try {
             console.log(filename, email,id, 'ssss')
             // Make a post request to delete the audio file
-            await axios.post(`http://192.168.100.97:3001/delete-audio`, { filename: filename, email: email, id: id });
+            await axios.post(`http://52.78.100.137:3001/delete-audio`, { filename: filename, email: email, id: id });
 
             // Update the state to re-render the FlatList
             setUrls((prevAudioFiles) =>
