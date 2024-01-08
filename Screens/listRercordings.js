@@ -51,41 +51,83 @@ export default function ListRecordings({ tabId }) {
     };
 
     async function getAudio(email) {
+        // try {
+        //     setLoading(true)
+        //     const response = await fetch(`http://192.168.100.97:3001/all-audio?email=${email}`, { method: 'GET' })
+        //         .then((response) => response.json())
+        //         .then((data) => {
+        //             console.log(data)
+        //             const result = data.map(audioLink => {
+        //                 const sections = audioLink.split('/');
+        //                 const lastSection = sections[sections.length - 1];
+        //                 const secondlastSection = sections[sections.length - 2];
+        //                 console.log(secondlastSection + "inam")
+        //                 console.log(lastSection + "maaz")
+        //                 return {
+        //                     lastSection,
+        //                     secondlastSection,
+        //                     url: `https://otp-mobile.s3.amazonaws.com/${filePath}`
+        //                 };
+        //             });
+        //             setUrls(result)
+        //         })
+        //         .then(() => setLoading(false))
+        //         .catch((error) => console.error('Error retrieving audio files:', error));
+        // }
+        // catch (error) {
+        //     console.error('Error getting audio from server:', error);
+        // }
+
         try {
-            setLoading(true)
-            const response = await fetch(`http://52.78.100.137:3001/audio?email=${email}`, { method: 'GET' })
-                .then((response) => response.json())
-                .then((data) => {
-                    // console.log(data)
-                    const result = data.map(filePath => {
-                        const sections = filePath.split('/');
-                        const lastSection = sections[sections.length - 1];
-                        const secondlastSection = sections[sections.length - 2];
-                        console.log(secondlastSection + "inam")
-                        console.log(lastSection + "maaz")
-                        return {
-                            lastSection,
-                            secondlastSection,
-                            url: `https://otp-mobile.s3.amazonaws.com/${filePath}`
-                        };
-                    });
-                    setUrls(result)
-                })
-                .then(() => setLoading(false))
-                .catch((error) => console.error('Error retrieving audio files:', error));
-        }
-        catch (error) {
+            setLoading(true);
+            const response = await fetch(`http://192.168.100.97:3001/all-audio`, {
+                method: 'POST', // Use POST method to send data in the request body
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: email }), // Include email in the request body
+            });
+    
+            const data = await response.json();
+            console.log(data);
+    
+            const result = data.map(audioLink => {
+                console.log(audioLink,'........................')
+                const sections = audioLink.audioLink.split('/');
+                const lastSection = sections[sections.length - 1];
+                const secondlastSection = sections[sections.length - 2];
+                console.log(secondlastSection + "inam");
+                let audioStatus = audioLink.status;
+                let id = audioLink._id;
+                console.log(id + "maaz");
+
+                console.log(sections, 'hello----------------')
+                console.log(lastSection + "maaz");
+                return {
+                    // audioLink.status,
+                    id,
+                    audioStatus,
+                    lastSection,
+                    secondlastSection,
+                    url: `${audioLink.audioLink}` ,
+                };
+            });
+    
+            setUrls(result);
+            setLoading(false);
+        } catch (error) {
             console.error('Error getting audio from server:', error);
+            setLoading(false);
         }
         const id = await AsyncStorage.getItem('userId').then((userid) => setUser(userid))
 
 
     }
-    const onDelete = async (filename, email) => {
+    const onDelete = async (filename, email, id) => {
         try {
-            console.log(filename, email, 'ssss')
+            console.log(filename, email,id, 'ssss')
             // Make a post request to delete the audio file
-            await axios.post(`http://52.78.100.137:3001/delete-audio`, { filename: filename, email: email });
+            await axios.post(`http://192.168.100.97:3001/delete-audio`, { filename: filename, email: email, id: id });
 
             // Update the state to re-render the FlatList
             setUrls((prevAudioFiles) =>
@@ -156,8 +198,10 @@ export default function ListRecordings({ tabId }) {
                                 index={index}
                                 active={active}
                                 isPlayAudio={isPlayAudio}
-                                onDelete={() => onDelete(item.lastSection, item.secondlastSection)} // Pass the filename to onDelete
+                                onDelete={() => onDelete(item.lastSection, item.secondlastSection, item.id )} // Pass the filename to onDelete
                                 getActive={(isActive) => getActive(index, isActive)}
+                                audioStatus={item.audioStatus} // Pass the audioStatus prop here
+
                             />
 
                         </View>

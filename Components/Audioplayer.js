@@ -9,8 +9,9 @@ import { FontAwesome } from '@expo/vector-icons'; // Import FontAwesome
 import { useNavigation } from '@react-navigation/native';
 
 
-const AudioPlayer = ({ audioFile, title, getActive, index,active , onDelete ,isPlayAudio,pause}) => {
+const AudioPlayer = ({ audioFile, title, getActive, index,active , onDelete ,isPlayAudio,pause, audioStatus}) => {
 
+  console.log(audioStatus, 'hello')
   const navigation = useNavigation()
   const sliderAnimation = useState(new Animated.Value(0))[0];
 
@@ -251,7 +252,8 @@ const AudioPlayer = ({ audioFile, title, getActive, index,active , onDelete ,isP
 
   return (
 
-    <View style={styles.container}>
+<View style={[styles.container, audioStatus === 'Accepted' ? styles.acceptedBorder : audioStatus === 'Rejected' ? styles.rejectedBorder : null]}>
+
 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
   {title && (
     <Text style={[styles.title, { width: '70%' }]} numberOfLines={1} ellipsizeMode="tail">
@@ -364,6 +366,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'black'
   },
+  acceptedBorder: {
+    borderColor: 'green',
+    borderWidth: 2, // Adjust the border width as needed
+
+  },
+  rejectedBorder: {
+    borderColor: 'red',
+    borderWidth: 2, // Adjust the border width as needed
+  },
+  
 });
 
 export default AudioPlayer;

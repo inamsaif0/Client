@@ -18,7 +18,7 @@ import Autocomplete from 'react-native-autocomplete-input';
 import { useEffect } from 'react';
 import SelectDropdown from 'react-native-select-dropdown'
 import { useFocusEffect } from '@react-navigation/native';
-
+import TextTicker from 'react-native-text-ticker';
 
 
 
@@ -31,11 +31,11 @@ const sendAudioToServer = async (location, email, fileName, teacherName) => {
         });
         const time = new Date()
         // console.log('audio',audioData)
-        
+
         // Send the audio file to the Node.js server
-        const response = await fetch('http://52.78.100.137:3001/audio', {
+        const response = await fetch('http://192.168.100.97:3001/audio', {
             method: 'POST',
-            body: JSON.stringify({ audio: audioData, time: time, email: email, name: fileName.replace(/\s/g, '-'), teacherData: teacherName, status: null}),
+            body: JSON.stringify({ audio: audioData, time: time, email: email, name: fileName.replace(/\s/g, '-'), teacherData: teacherName, status: null }),
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -74,13 +74,32 @@ export default function Record() {
     const [teachersName, setTeacherName] = useState('');
     const [showSelectTeacherMessage, setShowSelectTeacherMessage] = useState(false);
 
-    
+
     // const [selectedTeacher, setSelectedTeacher] = useState('');
 
 
     const [query, setQuery] = useState('');
     // const countries = ["Egypt", "Canada", "Australia", "Ireland"]
+    const [screenTime, setScreenTime] = useState(0);
+    const isValidEnglishInput = (text) => /^[a-zA-Z ]*$/.test(text);
 
+    useEffect(() => {
+        let interval;
+
+        if (recording) {
+            // Start an interval to update screen time every second
+            interval = setInterval(() => {
+                setScreenTime((prevTime) => prevTime + 1);
+            }, 1000);
+        }
+
+        return () => {
+            // Cleanup the interval when component unmounts or recording stops
+            if (interval) {
+                clearInterval(interval);
+            }
+        };
+    }, [recording]);
 
 
     useEffect(() => {
@@ -128,7 +147,7 @@ export default function Record() {
             setTimeout(fadeOut, 2000); // Fade out after 2 seconds (adjust as needed)
         }
     }, [showNotification]);
-    
+
 
     useEffect(() => {
         // Component mount logic
@@ -148,11 +167,11 @@ export default function Record() {
     //     else{
     //         setDataPause(true)
     //     }
-        
+
     // }, []);
     // useEffect(async () => {
 
-    
+
     //     const unsubscribeFocus = navigation.addListener('focus', async () => {
     //         // Logic to execute when the component gains focus (e.g., resume recording)
     //         if(dataPause){
@@ -163,9 +182,9 @@ export default function Record() {
     //         }
     //         console.log('Component focused');
     //         // Pause recording when the component loses focus
-    
+
     //     });
-    
+
     //     const unsubscribeBlur = navigation.addListener('blur', async () => {
     //         // Logic to execute when the component loses focus (e.g., pause recording)
     //         if(dataPause){
@@ -178,15 +197,15 @@ export default function Record() {
     //          // Pause recording when the component loses focus
     //     });
     //     // setIsPlaying(false)
-    
+
     //     // Cleanup subscriptions when the component unmounts
     //     return  async()  => {
     //       console.log(sound ,'Compodasdas asd d asd asd das asnent focused');
-    
-    
-    
-    
-    
+
+
+
+
+
     //         unsubscribeFocus();
     //         unsubscribeBlur();
     //     };
@@ -219,12 +238,12 @@ export default function Record() {
                 allowsRecordingIOS: true,
                 playsInSilentModeIOS: true,
             });
-    
+
             console.log('Starting recording..');
-    
+
             const recordingOptions = {
                 android: {
-                    extension: '.m4a', // You can adjust the extension based on your preference
+                    extension: '.wav', // You can adjust the extension based on your preference
                     sampleRate: 44100,
                     numberOfChannels: 2,
                     bitRate: 32000, // Adjust the bit rate to further reduce file size
@@ -232,25 +251,25 @@ export default function Record() {
                     // You may need to experiment with these options to find the best quality for your use case
                 },
                 ios: {
-                    extension: '.m4a', // You can adjust the extension based on your preference
+                    extension: '.wav', // You can adjust the extension based on your preference
                     sampleRate: 44100,
                     numberOfChannels: 2,
                     bitRate: 32000, // Adjust the bit rate to further reduce file size
-                audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_LOW,
+                    audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_LOW,
                     // You may need to experiment with these options to find the best quality for your use case
                 },
             };
-    
+
             const { recording } = await Audio.Recording.createAsync(recordingOptions);
             console.log(recording, 'sssssss')
             setRecording(recording);
             console.log('Recording started');
-    
+
             // Assuming you want to stop the recording after 2 minutes (120,000 milliseconds)
             // setTimeout(() => {
             //     stopRecording();
             // }, 120000); // Adjust the duration as needed
-    
+
         } catch (err) {
             console.error('Failed to start recording', err);
         }
@@ -298,7 +317,7 @@ export default function Record() {
         try {
             scaleAnimation.stop();
             console.log('Stopping recording..');
-    
+
             if (recording) {
                 // Check if the recorder exists before stopping it
                 await recording.stopAndUnloadAsync();
@@ -307,10 +326,10 @@ export default function Record() {
             } else {
                 console.warn('Recorder does not exist. Prepare it first using Audio.prepareToRecordAsync.');
             }
-    
+
             setRecording(undefined);
             setPause(false);
-    
+
             await Audio.setAudioModeAsync({
                 allowsRecordingIOS: false,
             });
@@ -318,7 +337,7 @@ export default function Record() {
             console.error(error);
         }
     }
-    
+
     async function pauseRecording() {
         if (recording) {
             try {
@@ -375,30 +394,30 @@ export default function Record() {
     async function goBack() {
         await stopRecording();
         // await pauseRecording()
-        
+
         navigation.goBack()
     }
     function stateChange() {
-        if(dataPause){
+        if (dataPause) {
             setDataPause(false)
         }
-        else{
+        else {
             setDataPause(true)
         }
     }
     async function handleUpload() {
-        
+
         try {
             if (!teachersName) {
                 setShowSelectTeacherMessage(true);
-          
+
                 // Hide the message after 5 seconds
                 setTimeout(() => {
-                  setShowSelectTeacherMessage(false);
+                    setShowSelectTeacherMessage(false);
                 }, 5000);
-          
+
                 return false;
-              }
+            }
             setLoading(true)
             const response = await sendAudioToServer(location, email.userEmail, fileName, teachersName);
             cancelRecording();
@@ -461,12 +480,23 @@ export default function Record() {
 
     return (
         <View style={styles.Parent}>
+            {/* Note on top of the screen */}
+            <View style={styles.marqueeContainer}>
+                <Text
+                    style={styles.marqueeText}
+                    // repeatSpacer={50}
+                    // marqueeDelay={1000}
+          
+                >
+                    Note: Please keep this screen on while recording.
+                </Text>
+            </View>
             <View style={{ width: "100%" }}>
 
                 {
 
 
-                    location && <AudioPlayer audioFile={location} pause={dataPause}  />
+                    location && <AudioPlayer audioFile={location} pause={dataPause} />
                 }
             </View>
 
@@ -497,22 +527,25 @@ export default function Record() {
                 )}
                 {/* renderTeacherItem */}
                 <TextInput
-                    style={{
+                style={{
+                    margin: 0,
+                    marginTop: 1,
+                    padding: 5,
+                    width: "90%",
+                    borderBottomColor: '#5c0931',
+                    borderBottomWidth: 2,
+                }}
+                onChangeText={(text) => {
+                    if (isValidEnglishInput(text)) {
+                        setFileName(text);
+                    }
+                }}
+                value={fileName}
+                placeholder='Enter Filename (English only)'
+                keyboardType='default'  // Set keyboardType to default to open the English keyboard
+            />
 
-                        margin: 0,
-                        marginTop: 1,
-                        padding: 5,
-                        width: "90%",
-                        borderBottomColor: '#5c0931',
-                        borderBottomWidth: 2,
-
-                    }}
-                    onChangeText={setFileName}
-                    value={fileName}
-                    placeholder='Enter Filename'
-                />
-
-                <Stopwatch start={recording} clear={clear} pause={pause} />
+                <Stopwatch start={recording} clear={clear} pause={pause} screenTime={screenTime} />
                 <Animated.View style={{
                     transform: [{ scale: scaleValue }],
                 }}>
@@ -537,7 +570,7 @@ export default function Record() {
 
                         }
                     </Pressable>
-                                        
+
 
                     <Pressable onPress={goBack}>
                         <Entypo name="list" size={40} color="black" style={{}} />
@@ -584,8 +617,8 @@ const styles = StyleSheet.create({
 
 
     },
-    errorMessage:{
-        color:'red'
+    errorMessage: {
+        color: 'red'
     },
     notificationContainer: {
         position: 'absolute',
@@ -630,6 +663,17 @@ const styles = StyleSheet.create({
     rowStyle: {
         padding: 10,
         backgroundColor: '#ecf0f1',
+    },
+    marqueeContainer: {
+        backgroundColor: '#5c0931', // Theme color
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    marqueeText: {
+        color: 'white', // Text color
+        fontWeight: 'bold',
+        fontSize: 12,
     },
 });
 
