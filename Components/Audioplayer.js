@@ -262,7 +262,7 @@ const AudioPlayer = ({ audioFile, title, getActive, index,active , onDelete ,isP
   )}
 {onDelete &&
   <TouchableOpacity onPress={() => onDelete(index)}>
-    <FontAwesome name="trash" size={26} color="red" />
+    <FontAwesome name="trash" size={26} color="#5c0931" />
   </TouchableOpacity>
 }
 </View>
