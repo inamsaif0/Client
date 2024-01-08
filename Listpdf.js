@@ -141,6 +141,7 @@ export default function Listpdf() {
 
   function renderListItem({ item }) {
     const isPdf = item.filename.split('.').pop().toLowerCase() === 'pdf';
+    const lastSection = item.filename.replace(/\.[^/.]+$/, "");
 
 
 
@@ -155,7 +156,7 @@ export default function Listpdf() {
         style={styles.listItem}>
           <Image source={isPdf?pdf:docWord} style={{ width: 60, height: 60, borderRadius: 30 }} />
           <View style={{ alignItems: "flex-start", marginLeft: 10, justifyContent: 'space-evenly', flex: 1 }}>
-            <Text style={{ fontWeight: "bold" }}>{item.filename}</Text>
+            <Text style={{ fontWeight: "bold" }}>{lastSection}</Text>
             <Text style={{ fontWeight: "bold" }}>Teacher: {item.teacher}</Text>
             <Text style={{ fontWeight: "bold" }}>{`${new Date(item.date).getDate()}-${new Date(item.date).getMonth() + 1}-${new Date(item.date).getFullYear()}`}</Text>
             <Text>{item.position}</Text>

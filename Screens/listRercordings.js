@@ -94,7 +94,8 @@ export default function ListRecordings({ tabId }) {
             const result = data.map(audioLink => {
                 console.log(audioLink,'........................')
                 const sections = audioLink.audioLink.split('/');
-                const lastSection = sections[sections.length - 1];
+                const lastSection = sections[sections.length - 1].replace(".m4a", "");
+
                 const secondlastSection = sections[sections.length - 2];
                 console.log(secondlastSection + "inam");
                 let audioStatus = audioLink.status;

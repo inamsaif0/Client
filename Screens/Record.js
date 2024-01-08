@@ -81,7 +81,8 @@ export default function Record() {
     const [query, setQuery] = useState('');
     // const countries = ["Egypt", "Canada", "Australia", "Ireland"]
     const [screenTime, setScreenTime] = useState(0);
-    const isValidEnglishInput = (text) => /^[a-zA-Z ]*$/.test(text);
+    const isValidEnglishInput = (text) => /^[a-zA-Z0-9 _-]*$/.test(text);
+
 
     useEffect(() => {
         let interval;
@@ -514,7 +515,7 @@ export default function Record() {
                     rowTextForSelection={(item, index) => {
                         return item;
                     }}
-                    defaultValueByIndex={0}
+                    // defaultValueByIndex={0}
                     dropdownStyle={styles.dropdownStyle}
                     buttonStyle={styles.buttonStyle}
                     buttonTextStyle={styles.buttonTextStyle}
